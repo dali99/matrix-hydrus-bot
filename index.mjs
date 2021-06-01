@@ -13,8 +13,11 @@ const config = (existsSync("./config.json")) ? require("./config.json") : {};
 const homeserverUrl = (config.homeserver || process.env.BONES_HOMESERVER || process.env.MATRIXDEV_HOMESERVER);
 const accessToken = (config.token || process.env.BONES_TOKEN || process.env.MATRIXDEV_TOKEN);
 
-const hydrusURI = (config.hydrus_api || process.env.HYDRUS_URI || "http://192.168.10.50:45869");
-const hydrusToken = (config.hydrus_token || process.env.HYDRUS_TOKEN || );
+const hydrusURI = (config.hydrus_api || process.env.HYDRUS_URI);
+const hydrusToken = (config.hydrus_token || process.env.HYDRUS_TOKEN);
+
+const fake_hs = (config.fake_hs || process.env.FAKE_HS);
+const prefix = (config.prefix || process.env.PREFIX || "");
 
 // We'll want to make sure the bot doesn't have to do an initial sync every
 // time it restarts, so we need to prepare a storage provider. Here we use
@@ -83,7 +86,7 @@ async function handleCommand(roomId, event) {
     var ext = metadata.ext;
     var size = metadata.size;
 
-    var mxc = /*"https://matrix.dodsorf.as/_matrix/media/r0/download/dodsorf.as/hydrus-" + hash;*/ "mxc://dodsorf.as/hydrus-" + hash;
+    var mxc = "mxc://" + fake_hs + "/" + prefix + hash;
 
     var event = {
         "body": hash + ext,
