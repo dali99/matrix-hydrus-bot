@@ -1,9 +1,9 @@
 import {
     MatrixClient,
     SimpleFsStorageProvider,
-    AutojoinRoomsMixin,
-    RichReply,
+    RichRepliesPreprocessor
 } from "matrix-bot-sdk";
+
 
 import { existsSync } from "fs";
 import axios from "axios";
@@ -22,15 +22,20 @@ const prefix = (config.prefix || process.env.PREFIX || "");
 // We'll want to make sure the bot doesn't have to do an initial sync every
 // time it restarts, so we need to prepare a storage provider. Here we use
 // a simple JSON database.
-const storage = new SimpleFsStorageProvider("hello-bot.json");
+const storage = new SimpleFsStorageProvider("hydrus-bot.json");
 
 // Now we can create the client and set it up to automatically join rooms.
 const client = new MatrixClient(homeserverUrl, accessToken, storage);
-AutojoinRoomsMixin.setupOnClient(client);
+client.addPreprocessor(new RichRepliesPreprocessor(false));
 
 // We also want to make sure we can receive events - this is where we will
 // handle our command.
 client.on("room.message", handleCommand);
+client.on("room.invite", (roomId, inviteEvent) => {
+    console.log(inviteEvent);
+    if (inviteEvent.sender !== "@dandellion:dodsorf.as") return;
+    return client.joinRoom(roomId);
+});
 
 // Now that the client is all set up and the event handler is registered, start the
 // client up. This will start it syncing.
@@ -47,16 +52,18 @@ async function handleCommand(roomId, event) {
     // We never send `m.text` messages so this isn't required, however this is
     // how you would filter out events sent by the bot itself.
     if (event["sender"] === await client.getUserId()) return;
-
     // Make sure that the event looks like a command we're expecting
-    const body = event["content"]["body"];
-    if (!body) return;
+
+    const text = event["content"]["body"];
+    if (!text) return;
+
+    console.log(text);
 
     var tags = [];
 
     var re = /`([a-z1-9:. æøå]*)`/g;
     do {
-        var m = re.exec(body);
+        var m = re.exec(text);
         if (m) {
             tags.push(m[1]);
         }
