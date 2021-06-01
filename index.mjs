@@ -1,6 +1,7 @@
 import {
     MatrixClient,
     SimpleFsStorageProvider,
+    AutojoinUpgradedRoomsMixin,
     RichRepliesPreprocessor
 } from "matrix-bot-sdk";
 
@@ -26,6 +27,7 @@ const storage = new SimpleFsStorageProvider("hydrus-bot.json");
 
 // Now we can create the client and set it up to automatically join rooms.
 const client = new MatrixClient(homeserverUrl, accessToken, storage);
+AutojoinUpgradedRoomsMixin.setupOnClient(client);
 client.addPreprocessor(new RichRepliesPreprocessor(false));
 
 // We also want to make sure we can receive events - this is where we will
