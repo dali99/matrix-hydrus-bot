@@ -1,8 +1,8 @@
 {
-  "name": "hydrus-bones",
+  "name": "matrix-hydrus-bot",
   "version": "1.0.0",
   "description": "Matrix bot that posts images straight from the hydrus api",
-  "main": "index.js",
+  "bin": "index.mjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
